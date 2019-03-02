@@ -104,7 +104,7 @@ else if(d >= 8 && d < 12){
 }
 ```
 
-Next thing is to determine which is the closest vehicle within 30m ahead or behind in s position in each of the surrounding lanes and gather their speeds. 
+Next thing is to determine which is the closest vehicle within 30m ahead or behind in s position in each of the surrounding anc actual lanes and gather their speeds. 
 
 ```
 // velocity of the closest one
