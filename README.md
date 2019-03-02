@@ -106,6 +106,49 @@ else if(d >= 8 && d < 12){
 
 Next thing is to determine which is the closest vehicle within 30m ahead or behind in s position in each of the surrounding lanes and gather their speeds. 
 
+```
+// velocity of the closest one
+if(check_car_s > car_s - 30 && check_car_s <= car_s){
+  if(car_lane == lane - 1){
+    left_behind_flag = true;
+    if(car_s - check_car_s < closest_left_behind){
+      closest_left_behind = car_s - check_car_s;
+      left_behind_vel = check_speed;
+    }
+  }
+  // Check if it's on the right 
+  else if(car_lane == lane + 1){
+    right_behind_flag = true;
+    if(car_s - check_car_s < closest_right_behind){
+      closest_right_behind = car_s - check_car_s;
+      right_behind_vel = check_speed;
+    }
+  }
+}
+// Check cars ahead
+else if(check_car_s > car_s && check_car_s <= car_s + 30){
+  if(car_lane == lane){
+    ahead_flag = true;
+  }
+  // Check if it's on the left 
+  else if(car_lane == lane - 1){
+    left_ahead_flag = true;
+    if(car_s - check_car_s < closest_left_ahead){
+      closest_left_ahead = check_car_s - car_s;
+      left_ahead_vel = check_speed;
+    }
+  }
+  // Check if it's on the right 
+  else if(car_lane == lane + 1){
+    right_ahead_flag = true;
+    if(car_s - check_car_s < closest_right_ahead){
+      closest_right_ahead = check_car_s - car_s;
+      right_ahead_vel = check_speed;
+    }
+  }
+}
+```
+
 With this information we will determine if either we want to move to our right, to our left or simply stay in the same lane and also if we want to speed up or down incrementally.
 
 ```
