@@ -23,7 +23,7 @@ The main goal of this project is to drive safely sorting the other vehicles when
 ### 2. Trajectory generation.
 In order to generate the trajectories for the vehicle the library spline is used. This tool allows to obtain a smooth trajectory using reference points. Fisrt step to generate the trajectory is to define 2 intial points based either on the previous path data given to the planer or the actual vehicle position if previous data is been already executed.
 
-Next step is to define 3 points at 30, 60 and 90m ahead in frenet coordinates acoording to our current s and d that is given in terms of the actual lane.
+Next step is to define 3 points at 30, 60 and 90m ahead in frenet coordinates acoording to our current s and d (frenet coordinates) that is given in terms of the actual lane. This lane term will help us to move between lanes since the spline function will generate acoording to this, for instance, lane 0 corresponds to the left most lane, 1 to the center one and 2 is the right most lane.
 
 ```
 vector<double> next_wp0 = getXY(car_s+30,(2+4*lane),map_waypoints_s,map_waypoints_x,map_waypoints_y);
@@ -80,9 +80,62 @@ The last step is to rotated back to its original orientation and feed to the sim
 ![][image2]
 
 ### 3. Sensor fusion.
+The simulator give us all relevant information about surrounding vehicles:
+* s position.
+* d position.
+* velocity in x.
+* vlocity in y.
+
+Using this information the planner will decide in which lane to drive and at what velocity to do it. The approach for driving safely according to the other vehicles will be the following:
+
+Frist step is to determine in which lane is every vehicle using the d position.
+
+```
+// Check in wich lane is the car
+int car_lane;
+if(d >= 0 && d < 4){
+  car_lane = 0;
+}
+else if(d >= 4 && d < 8){
+  car_lane = 1;
+}
+else if(d >= 8 && d < 12){
+  car_lane = 2;
+}
+```
+
+Next thing is to determine which is the closest vehicle within 30m ahead or behind in s position in each of the surrounding lanes and gather their speeds. 
+
+With this information we will determine if either we want to move to our right, to our left or simply stay in the same lane and also if we want to speed up or down incrementally.
+
+```
+
+if(ahead_flag){
+  if(closest_left_behind >= 20 && closest_left_ahead >= 20 && 
+     left_behind_vel - ref_vel < 15 && ref_vel - left_ahead_vel < 15 &&
+     lane > 0){
+    lane--;
+  }
+  else if(closest_right_behind >= 20 && closest_right_ahead >= 20 &&
+          right_behind_vel - ref_vel < 15 && ref_vel - right_ahead_vel < 15
+          && lane != 2){
+    lane++;
+  }
+  else{
+    ref_vel -= 0.224;
+  }
+}
+else{
+  if(ref_vel < 49.5){
+    ref_vel += 0.224;
+  }
+} 
+```
+
+Simply if there is a car ahead us at less than 30m away we will look for a 40m gap on any lane where if there is a car behind us in that lane, this vehicle is not going 15mph faster than us and if there is a vehicle ahead in that lane, this is not going 15mph slower than us. If we can not merge we will we will reduce the speed 1mph. And if there is not a car ahead us we will speed up 1mph at a time, but being below the speed limit. 
 
 ![][image3]
 
 ### 4. Results.
-
+The vehicle is able to navigate succesfuly for several miles and does not surpass the established limits. 
 ![][image4]
