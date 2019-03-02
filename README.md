@@ -18,12 +18,12 @@ Simulator is based in Unity and mimics a car for autonomous driving in a highway
 
 ![][image1]
 
-The main goal of this project is to drive safely sorting the other vehicles when possible without exceeding the maximum allowed speed and jerk for vehicle's user control.
+The main goal of this project is to drive safely sorting the other vehicles when possible without exceeding the maximum allowed speed and jerk for vehicle's user comfort.
 
 ### 2. Trajectory generation.
-In order to generate the trajectories for the vehicle the library spline is used. This tool allows to obtain a smooth trajectory using reference points. Fisrt step to generate the trajectory is to define 2 intial points based either on the previous path data given to the planer or the actual vehicle position if previous data is been already executed.
+In order to generate the trajectories for the vehicle the library spline is used. This tool allows to obtain a smooth trajectory using reference points. Fisrt step to generate the trajectory is to define 2 intial points based either on the previous path data given to the planer or the actual vehicle position if previous data has been already executed.
 
-Next step is to define 3 points at 30, 60 and 90m ahead in frenet coordinates acoording to our current s and d (frenet coordinates) that is given in terms of the actual lane. This lane term will help us to move between lanes since the spline function will generate acoording to this, for instance, lane 0 corresponds to the left most lane, 1 to the center one and 2 is the right most lane.
+Next step is to define 3 points at 30, 60 and 90m ahead in s position in Frenet coordinates acoording to our current s and d (frenet coordinates) that is given in terms of the actual lane. This lane term will help us to move between lanes since the spline function will generate acoording to this, for instance, lane 0 corresponds to the left most lane, 1 to the center one and 2 is the right most lane.
 
 ```
 vector<double> next_wp0 = getXY(car_s+30,(2+4*lane),map_waypoints_s,map_waypoints_x,map_waypoints_y);
@@ -43,7 +43,7 @@ for(int i = 0; i < ptsx.size(); i++){
   ptsy[i] = (shift_x*sin(0-ref_yaw)+shift_y*cos(0-ref_yaw));
 }
 ```
-With this points a spline function is generated. This acts as an equation where according to a given x position the function returns the y coordinate  of the trajectory. Using this the last step is to generate 50 points using the reference velocity at which we want to travel and the delta time of our simulator (0.02s). Moreover as we are working in miles per hour these velocities have to be transformed from meters per second. Finally each x coordinate is incrementaly calculated and its corresponding y coordinate using the spline function.
+With these points a spline function is generated. This function acts as an equation where according to a given x position the function returns the y coordinate  of the trajectory. Using the reference velocity at which we want to travel and the delta time of our simulator (0.02s) we generate the rest of the points of the trajectory which will always be of 50. 
 
 ```
 // Calculate how to break up spline points so that we travel at our desired reference velocity
@@ -75,7 +75,7 @@ for(int i =0; i <= 50-previous_path_x.size(); i++){
 }
 ```
 
-The last step is to rotated back to its original orientation and feed to the simulator.
+The last step is to rotated back to its original orientation and feed to the simulator the path.
 
 ![][image2]
 
