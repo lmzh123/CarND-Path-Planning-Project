@@ -31,7 +31,7 @@ vector<double> next_wp1 = getXY(car_s+60,(2+4*lane),map_waypoints_s,map_waypoint
 vector<double> next_wp2 = getXY(car_s+90,(2+4*lane),map_waypoints_s,map_waypoints_x,map_waypoints_y);
 ```
 
-These 5 points are referenced according to the previous final position and heading.
+These 5 points in cartesian coordinates are referenced according to the previous final position and heading.
 
 ```
 for(int i = 0; i < ptsx.size(); i++){
@@ -43,7 +43,7 @@ for(int i = 0; i < ptsx.size(); i++){
   ptsy[i] = (shift_x*sin(0-ref_yaw)+shift_y*cos(0-ref_yaw));
 }
 ```
-With this points a spline function is generated. This acts as an equation where according to a given x position the function returns the y coordinate  of the trajectory. Using this the last step is to generate 50 points usig the reference velocity at which we want to travel for this we know the delta time of our simulator is 0.02s and as we are working in miles per hour these have to be transformed from meters per second and each x coordinate is incrementaly calculated and its corresponding y using the spline.
+With this points a spline function is generated. This acts as an equation where according to a given x position the function returns the y coordinate  of the trajectory. Using this the last step is to generate 50 points using the reference velocity at which we want to travel and the delta time of our simulator (0.02s). Moreover as we are working in miles per hour these velocities have to be transformed from meters per second. Finally each x coordinate is incrementaly calculated and its corresponding y coordinate using the spline function.
 
 ```
 // Calculate how to break up spline points so that we travel at our desired reference velocity
@@ -75,7 +75,7 @@ for(int i =0; i <= 50-previous_path_x.size(); i++){
 }
 ```
 
-Finally all these coordinates rotated back to its original orientation and fed to the simulator.
+The last step is to rotated back to its original orientation and feed to the simulator.
 
 ![][image2]
 
